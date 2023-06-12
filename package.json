@@ -13,6 +13,9 @@
     "axios": "^1.4.0",
     "core-js": "^3.31.0",
     "date-fns": "^2.30.0",
+    "marked": "^5.1.0",
+    "marked-gfm-heading-id": "^3.0.4",
+    "marked-mangle": "^1.0.1",
     "pinia": "^2.0.36",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0"
