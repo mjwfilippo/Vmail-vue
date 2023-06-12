@@ -9,7 +9,7 @@ import { gfmHeadingId } from "marked-gfm-heading-id";
 marked.use(mangle());
 marked.use(gfmHeadingId());
 
-// define props
+// defines props
 defineProps({
   email: {
     type: Object,

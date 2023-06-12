@@ -1,4 +1,5 @@
 <script setup>
+// import statements
 import MailTable from "@/components/MailTable.vue";
 </script>
 
