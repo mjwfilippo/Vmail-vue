@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import axios from "axios";
 import MailView from "./MailView.vue";
 import ModalView from "./ModalView.vue";
+import useEmailSelection from "@/composables/use-email-selection";
 
 // API calls
 let { data: emails } = await axios.get("http://localhost:3000/emails"); // retrieves data from fake db and sets it as emails variable
@@ -12,6 +13,9 @@ emails = ref(emails); // sets returned data as a ref
 
 // defined properties
 const openedEmail = ref(null); // defines a ref that will be used to set active opened email
+
+// email selection object
+const emailSelection = useEmailSelection();
 
 // computed properties
 const sortedEmails = computed(() => {
@@ -27,7 +31,6 @@ const unarchivedEmails = computed(() => {
 // API functions
 function openEmail(email) {
   openedEmail.value = email;
-  console.log(email);
 
   if (email) {
     email.read = true;
@@ -41,7 +44,6 @@ function archiveEmail(email) {
 }
 
 function updateEmail(email) {
-  console.log("updated database");
   axios.put(`http://localhost:3000/emails/${email.id}`, email); // makes the function to update the db re-usable
 }
 
@@ -76,24 +78,28 @@ function changeEmail({
 </script>
 
 <template>
+  <h1>{{ emailSelection.emails.size }} emails selected</h1>
   <table class="mail-table">
     <tbody>
       <tr
         v-for="email in unarchivedEmails"
         :key="email.id"
         :class="['clickable', email.read ? 'read' : '']"
-        @click="openEmail(email)"
       >
         <td>
-          <input type="checkbox" />
+          <input
+            type="checkbox"
+            @click="emailSelection.toggle(email)"
+            :selected="emailSelection.emails.has(email)"
+          />
         </td>
-        <td>{{ email.from }}</td>
-        <td>
+        <td @click="openEmail(email)">{{ email.from }}</td>
+        <td @click="openEmail(email)">
           <p>
             <strong>{{ email.subject }}</strong> - {{ email.body }}
           </p>
         </td>
-        <td class="date">
+        <td class="date" @click="openEmail(email)">
           {{ format(new Date(email.sentAt), "MMM do yyyy") }}
         </td>
         <td><button @click="archiveEmail(email)">Archive</button></td>
