@@ -7,8 +7,8 @@ import MailView from "./MailView.vue";
 import ModalView from "./ModalView.vue";
 
 // API calls
-let response = await axios.get("http://localhost:3000/emails"); // retrieves data from fake db
-const emails = ref(response.data); // sets returned data as a ref
+let { data: emails } = await axios.get("http://localhost:3000/emails"); // retrieves data from fake db and sets it as emails variable
+emails = ref(emails); // sets returned data as a ref
 
 // defined properties
 const openedEmail = ref(null); // defines a ref that will be used to set active opened email
@@ -26,9 +26,13 @@ const unarchivedEmails = computed(() => {
 
 // API functions
 function openEmail(email) {
-  email.read = true;
-  updateEmail(email);
   openedEmail.value = email;
+  console.log(email);
+
+  if (email) {
+    email.read = true;
+    updateEmail(email);
+  }
 }
 
 function archiveEmail(email) {
@@ -37,7 +41,37 @@ function archiveEmail(email) {
 }
 
 function updateEmail(email) {
+  console.log("updated database");
   axios.put(`http://localhost:3000/emails/${email.id}`, email); // makes the function to update the db re-usable
+}
+
+// email changing functions
+function changeEmail({
+  toggleArchive,
+  toggleRead,
+  save,
+  closeModal,
+  changeIndex
+}) {
+  let email = openedEmail.value;
+  if (toggleArchive) {
+    email.archived = !email.archived;
+  }
+  if (toggleRead) {
+    email.read = !email.read;
+  }
+  if (save) {
+    updateEmail(email);
+  }
+  if (closeModal) {
+    openedEmail.value = null;
+  }
+  if (changeIndex) {
+    let emails = unarchivedEmails.value;
+    let currentIndex = emails.indexOf(openedEmail.value);
+    let newEmail = emails[currentIndex + changeIndex];
+    openEmail(newEmail);
+  }
 }
 </script>
 
@@ -67,6 +101,10 @@ function updateEmail(email) {
     </tbody>
   </table>
   <ModalView v-if="openedEmail" @closeModal="openedEmail = null">
-    <MailView v-if="openedEmail" :email="openedEmail" />
+    <MailView
+      v-if="openedEmail"
+      :email="openedEmail"
+      @changeEmail="changeEmail"
+    />
   </ModalView>
 </template>
