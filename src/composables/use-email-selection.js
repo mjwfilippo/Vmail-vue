@@ -48,6 +48,7 @@ export const useEmailSelection = () => {
     clear();
   };
 
+  // returning all functions and variables
   return {
     emails,
     toggle,
