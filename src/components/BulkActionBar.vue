@@ -6,10 +6,12 @@ import useEmailSelection from "@/composables/use-email-selection";
 // email selection states declaration
 const emailSelection = useEmailSelection();
 const numberSelected = computed(() => emailSelection.emails.size);
-let numberEmails = props.emails.length;
-const allEmailSelected = computed(() => numberSelected.value === numberEmails);
+let numberEmails = computed(() => props.emails.length);
+const allEmailSelected = computed(
+  () => numberSelected.value === numberEmails.value
+);
 const someEmailsSelected = computed(
-  () => numberSelected.value > 0 && numberSelected.value < numberEmails
+  () => numberSelected.value > 0 && numberSelected.value < numberEmails.value
 );
 
 // function definition

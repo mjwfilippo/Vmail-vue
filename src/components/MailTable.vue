@@ -14,6 +14,7 @@ emails = ref(emails); // sets returned data as a ref
 
 // defined properties
 const openedEmail = ref(null); // defines a ref that will be used to set active opened email
+const selectedScreen = ref("inbox");
 
 // email selection object
 const emailSelection = useEmailSelection();
@@ -25,9 +26,19 @@ const sortedEmails = computed(() => {
   });
 });
 
-const unarchivedEmails = computed(() => {
-  return sortedEmails.value.filter(e => !e.archived);
+const filteredEmails = computed(() => {
+  if (selectedScreen.value == "inbox") {
+    return sortedEmails.value.filter(e => !e.archived);
+  } else {
+    return sortedEmails.value.filter(e => e.archived);
+  }
 });
+
+// screen-changing functions
+function selectScreen(newScreen) {
+  selectedScreen.value = newScreen;
+  emailSelection.clear();
+}
 
 // API functions
 function openEmail(email) {
@@ -70,7 +81,7 @@ function changeEmail({
     openedEmail.value = null;
   }
   if (changeIndex) {
-    let emails = unarchivedEmails.value;
+    let emails = filteredEmails.value;
     let currentIndex = emails.indexOf(openedEmail.value);
     let newEmail = emails[currentIndex + changeIndex];
     openEmail(newEmail);
@@ -79,11 +90,20 @@ function changeEmail({
 </script>
 
 <template>
-  <BulkActionBar :emails="unarchivedEmails"></BulkActionBar>
+  <button @click="selectScreen('inbox')" :disabled="selectedScreen == 'inbox'">
+    Inbox
+  </button>
+  <button
+    @click="selectScreen('archive')"
+    :disabled="selectedScreen == 'archive'"
+  >
+    Archived
+  </button>
+  <BulkActionBar :emails="filteredEmails"></BulkActionBar>
   <table class="mail-table">
     <tbody>
       <tr
-        v-for="email in unarchivedEmails"
+        v-for="email in filteredEmails"
         :key="email.id"
         :class="['clickable', email.read ? 'read' : '']"
       >
