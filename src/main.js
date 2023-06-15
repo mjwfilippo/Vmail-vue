@@ -1,14 +1,9 @@
-// import './assets/main.css'
-
+// import statements
 import { createApp } from "vue";
-import { createPinia } from "pinia";
-
 import App from "./App.vue";
-// import router from "./router";
 
+// const app declaration
 const app = createApp(App);
 
-app.use(createPinia());
-// app.use(router);
-
+// mounting the app variable to the DOM
 app.mount("#app");
